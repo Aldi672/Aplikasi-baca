@@ -233,14 +233,20 @@ class _BookListScreenState extends State<BookListScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
         onTap: () async {
-          final result = await Navigator.push(
+          final updatedBook = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => BookDetailScreen(book: book),
             ),
           );
-          if (result == true) {
-            _loadBooks();
+
+          if (updatedBook != null) {
+            final index = _books.indexWhere((b) => b.id == updatedBook.id);
+            if (index != -1) {
+              setState(() {
+                _books[index] = updatedBook;
+              });
+            }
           }
         },
         borderRadius: BorderRadius.circular(12),

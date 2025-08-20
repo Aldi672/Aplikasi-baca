@@ -231,28 +231,9 @@ class _AddBookScreenState extends State<AddBookScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 32),
+
             // Save Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _saveBook,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Simpan Buku', style: TextStyle(fontSize: 16)),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Cancel Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: OutlinedButton(
-                onPressed: _isLoading ? null : () => Navigator.pop(context),
-                child: const Text('Batal', style: TextStyle(fontSize: 16)),
-              ),
-            ),
+
             // Author Field
             const SizedBox(height: 16),
             TextFormField(
@@ -326,6 +307,26 @@ class _AddBookScreenState extends State<AddBookScreen> {
               },
             ),
             const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _saveBook,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Simpan Buku', style: TextStyle(fontSize: 16)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Cancel Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: OutlinedButton(
+                onPressed: _isLoading ? null : () => Navigator.pop(context),
+                child: const Text('Batal', style: TextStyle(fontSize: 16)),
+              ),
+            ),
           ],
         ),
       ),

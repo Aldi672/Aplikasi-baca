@@ -202,148 +202,195 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detail Buku'),
-        actions: [
-          IconButton(
-            onPressed: _isLoading
-                ? null
-                : () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditBookScreen(book: _book),
-                      ),
-                    );
-                    if (result is Book) {
-                      setState(() {
-                        _book = result;
-                      });
-                    }
-                  },
-            icon: const Icon(Icons.edit),
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'delete':
-                  _deleteBook();
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Hapus'),
-                  ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, _book);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Detail Buku'),
+          actions: [
+            IconButton(
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditBookScreen(book: _book),
+                        ),
+                      );
+                      if (result is Book) {
+                        setState(() {
+                          _book = result;
+                        });
+                      }
+                    },
+              icon: const Icon(Icons.edit),
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                switch (value) {
+                  case 'delete':
+                    _deleteBook();
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text('Hapus'),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header with book cover and title
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
+              ],
+            ),
+          ],
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with book cover and title
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
 
-                    decoration: BoxDecoration(
-                      image: _book.imagePath != null
-                          ? DecorationImage(
-                              image: FileImage(File(_book.imagePath!)),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: Column(
-                      children: [
-                        // Book Cover
-                        SizedBox(height: 20),
-                        Container(
-                          width: 120,
-                          height: 160,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: _book.imagePath != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.file(
-                                    File(_book.imagePath!),
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Icon(
-                                  Icons.book,
-                                  size: 60,
-                                  color: Colors.deepPurple.shade400,
-                                ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Title
-                        Text(
-                          _book.title,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        // Author
-                        Text(
-                          'oleh ${_book.author}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white70,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        // Status Badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _book.statusColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            _book.statusText,
-                            style: const TextStyle(
+                      decoration: BoxDecoration(
+                        image: _book.imagePath != null
+                            ? DecorationImage(
+                                image: FileImage(File(_book.imagePath!)),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
+                      child: Column(
+                        children: [
+                          // Book Cover
+                          SizedBox(height: 20),
+                          Container(
+                            width: 120,
+                            height: 160,
+                            decoration: BoxDecoration(
                               color: Colors.white,
-                              fontWeight: FontWeight.w600,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: _book.imagePath != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.file(
+                                      File(_book.imagePath!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.book,
+                                    size: 60,
+                                    color: Colors.deepPurple.shade400,
+                                  ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Title
+                          Text(
+                            _book.title,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          // Author
+                          Text(
+                            'oleh ${_book.author}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          // Status Badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _book.statusColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _book.statusText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Progress (if reading)
-                  if (_book.status == 'reading') ...[
+                    const SizedBox(height: 24),
+                    // Progress (if reading)
+                    if (_book.status == 'reading') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Progress Membaca',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextButton.icon(
+                                  onPressed: _updateProgress,
+                                  icon: const Icon(Icons.edit),
+                                  label: const Text('Update'),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            LinearProgressIndicator(
+                              value: _book.progress,
+                              backgroundColor: Colors.grey.shade300,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.deepPurple.shade400,
+                              ),
+                              minHeight: 8,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${_book.currentPage}/${_book.totalPages} halaman (${(_book.progress * 100).toInt()}%)',
+                              style: TextStyle(color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                    // Book Information
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
@@ -353,130 +400,123 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                'Progress Membaca',
+                                'Informasi Buku',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              TextButton.icon(
-                                onPressed: _updateProgress,
-                                icon: const Icon(Icons.edit),
-                                label: const Text('Update'),
+                              InkWell(
+                                onTap: () {
+                                  // aksi saat tombol ditekan
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade400,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    _book.statusText.toLowerCase() == 'selesai'
+                                        ? 'Baca Ulang'
+                                        : _book.statusText.toLowerCase() ==
+                                              'belum dibaca'
+                                        ? 'Lanjut Baca'
+                                        : 'Baca Sekarang',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          LinearProgressIndicator(
-                            value: _book.progress,
-                            backgroundColor: Colors.grey.shade300,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.deepPurple.shade400,
-                            ),
-                            minHeight: 8,
+
+                          const SizedBox(height: 16),
+                          // Info Cards Grid
+                          GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 2.5,
+                            children: [
+                              _buildInfoCard(
+                                'Genre',
+                                _book.genre,
+                                Icons.category,
+                              ),
+                              _buildInfoCard(
+                                'Total Halaman',
+                                '${_book.totalPages}',
+                                Icons.pages,
+                              ),
+                              _buildInfoCard(
+                                'Tanggal Ditambah',
+                                '${_book.dateAdded.day}/${_book.dateAdded.month}/${_book.dateAdded.year}',
+                                Icons.calendar_today,
+                              ),
+                              if (_book.dateCompleted != null)
+                                _buildInfoCard(
+                                  'Tanggal Selesai',
+                                  '${_book.dateCompleted!.day}/${_book.dateCompleted!.month}/${_book.dateCompleted!.year}',
+                                  Icons.check_circle,
+                                ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${_book.currentPage}/${_book.totalPages} halaman (${(_book.progress * 100).toInt()}%)',
-                            style: TextStyle(color: Colors.grey.shade600),
+                          const SizedBox(height: 24),
+                          // Description
+                          const Text(
+                            'Deskripsi',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            child: Text(
+                              _book.description.isNotEmpty
+                                  ? _book.description
+                                  : 'Tidak ada deskripsi',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: _book.description.isNotEmpty
+                                    ? Colors.black87
+                                    : Colors.grey.shade500,
+                                height: 1.5,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                   ],
-                  // Book Information
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Informasi Buku',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Info Cards Grid
-                        GridView.count(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 2.5,
-                          children: [
-                            _buildInfoCard(
-                              'Genre',
-                              _book.genre,
-                              Icons.category,
-                            ),
-                            _buildInfoCard(
-                              'Total Halaman',
-                              '${_book.totalPages}',
-                              Icons.pages,
-                            ),
-                            _buildInfoCard(
-                              'Tanggal Ditambah',
-                              '${_book.dateAdded.day}/${_book.dateAdded.month}/${_book.dateAdded.year}',
-                              Icons.calendar_today,
-                            ),
-                            if (_book.dateCompleted != null)
-                              _buildInfoCard(
-                                'Tanggal Selesai',
-                                '${_book.dateCompleted!.day}/${_book.dateCompleted!.month}/${_book.dateCompleted!.year}',
-                                Icons.check_circle,
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        // Description
-                        const Text(
-                          'Deskripsi',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade200),
-                          ),
-                          child: Text(
-                            _book.description.isNotEmpty
-                                ? _book.description
-                                : 'Tidak ada deskripsi',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: _book.description.isNotEmpty
-                                  ? Colors.black87
-                                  : Colors.grey.shade500,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
+                ),
               ),
-            ),
-      // Floating Action Button for quick actions
-      floatingActionButton: _book.status == 'reading'
-          ? FloatingActionButton.extended(
-              onPressed: _updateProgress,
-              icon: const Icon(Icons.bookmark_add),
-              label: const Text('Update Progress'),
-            )
-          : null,
+        // Floating Action Button for quick actions
+        floatingActionButton: _book.status == 'reading'
+            ? FloatingActionButton.extended(
+                onPressed: _updateProgress,
+                icon: const Icon(Icons.bookmark_add),
+                label: const Text('Update Progress'),
+              )
+            : null,
+      ),
     );
   }
 }

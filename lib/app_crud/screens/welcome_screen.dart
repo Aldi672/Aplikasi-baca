@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tugas13/app_crud/screens/book_list_screen.dart';
+import 'package:tugas13/app_crud/MainScreen/Bottom/mainscreen.dart';
+// import 'package:tugas13/app_crud/screens/book_list_screen.dart';
 import 'package:tugas13/app_crud/screens/login_screen.dart';
 import 'package:tugas13/app_crud/services/auth_prefs.dart';
 
@@ -27,7 +28,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         // Navigate to book list if already logged in
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const BookListScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
         );
       } else {
         // Show welcome screen for a moment then navigate to login

@@ -171,6 +171,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
         ],
       ),
       body: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),

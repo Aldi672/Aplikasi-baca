@@ -107,9 +107,11 @@ class _EditBookScreenState extends State<EditBookScreen> {
       int currentPage = int.parse(
         _currentPageController.text.isEmpty ? '0' : _currentPageController.text,
       );
+      // otomatis currentPage akan sama dengan jumlah total halaman
       if (_selectedStatus == 'completed') {
         currentPage = int.parse(_totalPagesController.text);
       }
+      // Buat objek buku baru berdasarkan data lama
       final updatedBook = widget.book.copyWith(
         title: _titleController.text.trim(),
         author: _authorController.text.trim(),

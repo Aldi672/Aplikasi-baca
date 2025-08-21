@@ -26,13 +26,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       });
       if (isLoggedIn) {
         // Navigate to book list if already logged in
+        await Future.delayed(const Duration(seconds: 3));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
       } else {
         // Show welcome screen for a moment then navigate to login
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 3));
         if (mounted) {
           Navigator.pushReplacement(
             context,

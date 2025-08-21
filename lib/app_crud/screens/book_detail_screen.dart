@@ -509,6 +509,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 ),
               ),
         // Floating Action Button for quick actions
+        // Jika buku sedang dalam status dibaca, tombol "Update Progress" muncul di bawah kanan.
         floatingActionButton: _book.status == 'reading'
             ? FloatingActionButton.extended(
                 onPressed: _updateProgress,

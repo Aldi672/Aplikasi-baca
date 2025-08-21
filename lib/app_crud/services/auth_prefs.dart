@@ -9,11 +9,9 @@ class AuthPreferences {
   static const String _keyUserPassword =
       'user_password'; // In real app, never store password
   // Login user
-  static Future<bool> loginUser(
-    String username,
-    String email,
-    String password,
-  ) async {
+  static Future<bool> loginUser(String username, String email, String password)
+  //Mengecek apakah email & password yang dimasukkan sama dengan yang tersimpan
+  async {
     final prefs = await SharedPreferences.getInstance();
     // validasi terlebih dahulu
     final savedEmail = prefs.getString(_keyEmail) ?? '';
@@ -27,7 +25,7 @@ class AuthPreferences {
     return false;
   }
 
-  // Register user
+  // Menyimpan data user baru
   static Future<bool> registerUser(
     String username,
     String email,
@@ -48,31 +46,31 @@ class AuthPreferences {
     return false;
   }
 
-  // Check if user is logged in
+  // Mengecek apakah user sudah login atau belum
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyIsLoggedIn) ?? false;
   }
 
-  // Get current username
+  // Mengambil data user yang tersimpan.
   static Future<String> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyUsername) ?? 'User';
   }
 
-  // Get current email
+  // Mengambil data user yang tersimpan.
   static Future<String> getEmail() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyEmail) ?? '';
   }
 
-  // Logout user
+  // supaya user dianggap logout.
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyIsLoggedIn, false);
   }
 
-  // Validate login credentials
+  // Mengecek apakah email & password sesuai.
   static Future<bool> validateCredentials(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
     final savedEmail = prefs.getString(_keyEmail) ?? '';
@@ -80,7 +78,7 @@ class AuthPreferences {
     return email == savedEmail && password == savedPassword;
   }
 
-  // Check if user exists (for registration)
+  // Mengecek apakah user dengan email tertentu sudah terdaftar.
   static Future<bool> userExists(String email) async {
     final prefs = await SharedPreferences.getInstance();
     final savedEmail = prefs.getString(_keyEmail) ?? '';

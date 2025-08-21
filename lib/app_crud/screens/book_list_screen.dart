@@ -214,16 +214,19 @@ class _BookListScreenState extends State<BookListScreen> {
     return Container(
       margin: const EdgeInsets.only(right: 8),
       child: FilterChip(
-        selected: isSelected,
-        label: Text(label),
+        selected:
+            isSelected, // menentukan apakah chip ini sedang terpilih atau tidak
+        label: Text(
+          label,
+        ), // teks yang tampil di chip (misalnya "Semua", "Selesai", "Belum")
         onSelected: (selected) {
+          // callback saat chip diklik / dipilih
           setState(() {
-            _selectedFilter = value;
-            _applyFilter();
+            _selectedFilter =
+                value; // simpan nilai filter yang dipilih ke variabel state
+            _applyFilter(); // panggil fungsi untuk menerapkan filter pada daftar buku
           });
         },
-        selectedColor: Colors.deepPurple.shade200,
-        checkmarkColor: Colors.deepPurple,
       ),
     );
   }
@@ -241,10 +244,19 @@ class _BookListScreenState extends State<BookListScreen> {
           );
 
           if (updatedBook != null) {
+            // Cek dulu apakah data updatedBook tidak null (ada buku yang berhasil diupdate)
+
             final index = _books.indexWhere((b) => b.id == updatedBook.id);
+            // Cari posisi (index) buku yang ada di list _books dengan mencocokkan id buku
+            // indexWhere akan mengembalikan posisi pertama yang cocok, atau -1 jika tidak ada
+
             if (index != -1) {
+              // Kalau index tidak -1 berarti buku dengan id yang sama ditemukan di dalam list
+
               setState(() {
                 _books[index] = updatedBook;
+                // Update data buku di posisi tersebut dengan data buku yang sudah diperbarui
+                // setState dipanggil agar UI di-refresh sesuai data terbaru
               });
             }
           }

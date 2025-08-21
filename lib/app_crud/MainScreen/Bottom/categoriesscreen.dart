@@ -1,164 +1,176 @@
-// categories_screen.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:tugas13/app_crud/db/db_helper.dart';
+import 'package:tugas13/app_crud/models/book.dart';
+import 'package:tugas13/app_crud/screens/book_detail_screen.dart';
+import 'package:tugas13/app_crud/screens/book_reading.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Dummy data untuk kategori buku
-    final List<Map<String, dynamic>> categories = [
-      {
-        'title': 'JASAD RENIK',
-        'subtitle': 'Dalam Perspektif...',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.blue.shade100,
-      },
-      {
-        'title': 'MAKANAN & MINUMAN',
-        'subtitle': '',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.green.shade100,
-      },
-      {
-        'title': 'Manfaat Benda-Ben...',
-        'subtitle': '',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.orange.shade100,
-      },
-      {
-        'title': 'PENCIPTAAN BUMI',
-        'subtitle': 'Dalam Perspektif...',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.purple.shade100,
-      },
-      {
-        'title': 'PENCIPTAAN JAGAT RAYA',
-        'subtitle': 'Dalam Perspektif...',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.red.shade100,
-      },
-      {
-        'title': 'SAMUDRA',
-        'subtitle': 'Dalam Perspektif...',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.teal.shade100,
-      },
-      {
-        'title': 'PENCIPTAAN BUMI Dala...',
-        'subtitle': '',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.pink.shade100,
-      },
-      {
-        'title': 'PENCIPTAAN JAGAT RAYA...',
-        'subtitle': '',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.indigo.shade100,
-      },
-      {
-        'title': 'SAMUDRA',
-        'subtitle': 'Dalam Perspektif...',
-        'category': 'Tafsir Ilmi',
-        'color': Colors.cyan.shade100,
-      },
-    ];
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
 
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  List<Book> _books = [];
+  List<Book> _filteredBooks = [];
+  bool _isLoading = true;
+
+  final GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Langsung load data tanpa menunggu refresh indicator
+    _loadBooks();
+
+    // Opsional: tetap sediakan refresh indicator untuk manual refresh
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshKey.currentState?.show();
+    });
+  }
+
+  Future<void> _refreshBooks() async {
+    await _loadBooks();
+  }
+
+  Future<void> _loadBooks() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final books = await DatabaseHelper.instance.readAllBooks();
+      setState(() {
+        _books = books;
+        _filteredBooks = books; // default semua tampil
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error load books: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kategori'),
         automaticallyImplyLeading: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 3 kolom
-            crossAxisSpacing: 12, // Spasi horizontal antar item
-            mainAxisSpacing: 12, // Spasi vertikal antar item
-            childAspectRatio: 0.7, // Rasio lebar/tinggi item
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return _buildCategoryCard(
-              title: category['title']!,
-              subtitle: category['subtitle']!,
-              category: category['category']!,
-              color: category['color'] as Color,
-            );
-          },
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _filteredBooks.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.library_books_outlined,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _books.isEmpty
+                        ? 'Belum ada buku dalam koleksi'
+                        : 'Tidak ada buku sesuai filter',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              key: _refreshKey,
+              onRefresh: _loadBooks,
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.65,
+                ),
+                itemCount: _filteredBooks.length,
+                itemBuilder: (context, index) {
+                  final book = _filteredBooks[index];
+                  return _buildBookGridCard(context, book);
+                },
+              ),
+            ),
     );
   }
 
-  Widget _buildCategoryCard({
-    required String title,
-    required String subtitle,
-    required String category,
-    required Color color,
-  }) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Judul utama
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                height: 1.2,
+  Widget _buildBookGridCard(BuildContext context, Book book) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BacaAsbabunNuzulScreen()),
+        );
+      },
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.deepPurple.shade50,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Cover Buku
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: book.imagePath != null
+                      ? Image.file(
+                          File(book.imagePath!),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        )
+                      : Container(
+                          color: Colors.deepPurple.shade100,
+                          child: const Icon(
+                            Icons.book,
+                            size: 40,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                ),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            // Subtitle (jika ada)
-            if (subtitle.isNotEmpty) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
+              // Judul Buku
               Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey.shade700,
-                  height: 1.1,
+                book.title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
                 maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+              // Genre
+              Text(
+                book.genre,
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-
-            // Spacer untuk push category ke bawah
-            const Spacer(),
-
-            // Kategori (Tafsir Ilmi)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                category,
-                style: const TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

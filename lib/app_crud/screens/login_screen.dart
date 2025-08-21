@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tugas13/app_crud/screens/book_list_screen.dart';
+import 'package:tugas13/app_crud/mainscreen/home_screen.dart';
+// import 'package:tugas13/app_crud/screens/book_list_screen.dart';
 import 'package:tugas13/app_crud/screens/register_screen.dart';
 import 'package:tugas13/app_crud/services/auth_prefs.dart';
 
@@ -10,44 +11,60 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // key untuk mengontrol validasi form login
   final _formKey = GlobalKey<FormState>();
+  // controller untuk mengambil teks dari input email
   final _emailController = TextEditingController();
+  // controller untuk mengambil teks dari input password
   final _passwordController = TextEditingController();
+  // indikator apakah sedang loading (misalnya menunggu proses login)
   bool _isLoading = false;
+  // indikator apakah password disembunyikan atau ditampilkan
   bool _obscurePassword = true;
   @override
   void dispose() {
+    // hapus controller email dari memory saat widget dihancurkan
     _emailController.dispose();
+    // hapus controller password dari memory saat widget dihancurkan
     _passwordController.dispose();
+    // panggil dispose bawaan
     super.dispose();
   }
 
   Future<void> _login() async {
+    // cek validasi form, kalau tidak valid → hentikan fungsi
     if (!_formKey.currentState!.validate()) return;
+
+    // ubah state jadi loading = true
     setState(() {
       _isLoading = true;
     });
+
     try {
-      // Check if user exists and credentials are valid
+      // cek apakah email dan password valid dengan AuthPreferences
       final isValid = await AuthPreferences.validateCredentials(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
+        _emailController.text.trim(), // ambil email tanpa spasi
+        _passwordController.text.trim(), // ambil password tanpa spasi
       );
+
       if (isValid) {
-        // Login successful
+        // kalau valid → simpan data login user
         await AuthPreferences.loginUser(
-          'User', // In real app, get from stored data
+          'User', // sementara hardcode nama user "User"
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
+
+        // pastikan widget masih aktif (tidak dispose)
         if (mounted) {
+          // pindah ke halaman BookListScreen dan hapus halaman login dari stack
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const BookListScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
         }
       } else {
-        // Login failed
+        // kalau email/password salah → tampilkan SnackBar merah
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -58,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } catch (e) {
+      // kalau ada error saat proses login (misal DB error) → tampilkan SnackBar merah
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -67,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } finally {
+      // apapun hasilnya (berhasil/gagal), matikan indikator loading
       if (mounted) {
         setState(() {
           _isLoading = false;

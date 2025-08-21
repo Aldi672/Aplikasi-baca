@@ -66,41 +66,71 @@ class _AddBookScreenState extends State<AddBookScreen> {
   }
 
   Future<void> _saveBook() async {
+    // Fungsi async untuk menyimpan data buku ke database
+
     if (!_formKey.currentState!.validate()) return;
+    // Validasi form, kalau form tidak valid langsung keluar (return) dan tidak lanjut
+
     setState(() {
       _isLoading = true;
     });
+    // Ubah state menjadi loading (misalnya untuk menampilkan indikator loading)
+
     try {
       final book = Book(
+        // Membuat objek Book baru dari input user
         title: _titleController.text.trim(),
+        // Ambil teks judul dari controller dan hapus spasi depan-belakang
         author: _authorController.text.trim(),
+        // Ambil nama penulis
         description: _descriptionController.text.trim(),
+        // Ambil deskripsi
         genre: _selectedGenre,
+        // Ambil genre yang dipilih user
         totalPages: int.parse(_totalPagesController.text),
+        // Ambil total halaman, diubah ke integer
         currentPage: int.parse(
           _currentPageController.text.isEmpty
               ? '0'
               : _currentPageController.text,
         ),
+        // Ambil halaman yang sedang dibaca, kalau kosong otomatis jadi 0
         status: _selectedStatus,
+        // Ambil status buku (misalnya "reading" atau "completed")
         dateAdded: DateTime.now(),
+        // Simpan tanggal saat buku ditambahkan
         dateCompleted: _selectedStatus == 'completed' ? DateTime.now() : null,
+        // Kalau status completed, simpan juga tanggal selesai, kalau belum biarkan null
         imagePath: _image?.path,
+        // Simpan path gambar kalau ada
       );
+
       await DatabaseHelper.instance.createBook(book);
+      // Simpan buku ke database menggunakan DatabaseHelper
+
       if (mounted) {
+        // Pastikan widget masih ada di tree (tidak dispose)
+
         setState(() {
           _image = null;
         });
+        // Reset gambar setelah berhasil menyimpan buku
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Buku berhasil ditambahkan'),
             backgroundColor: Colors.deepPurple,
           ),
         );
+        // Tampilkan notifikasi snackbar kalau buku berhasil ditambahkan
+
         Navigator.pop(context, true);
+        // Kembali ke halaman sebelumnya, sekaligus mengirim hasil "true"
+        // (biasanya digunakan untuk memicu refresh data di halaman sebelumnya)
       }
     } catch (e) {
+      // Tangkap error jika ada kesalahan saat menyimpan buku
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -108,12 +138,16 @@ class _AddBookScreenState extends State<AddBookScreen> {
             backgroundColor: Colors.red,
           ),
         );
+        // Tampilkan pesan error lewat snackbar
       }
     } finally {
+      // Bagian ini tetap jalan meskipun ada error
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
+        // Ubah status loading jadi false agar indikator loading hilang
       }
     }
   }

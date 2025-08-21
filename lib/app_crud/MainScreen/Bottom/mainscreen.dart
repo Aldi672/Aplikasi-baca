@@ -1,8 +1,8 @@
 // main_screen.dart
 import 'package:flutter/material.dart';
-import 'package:tugas13/app_crud/MainScreen/Bottom/bookmarkscreen.dart';
-import 'package:tugas13/app_crud/MainScreen/Bottom/categoriesscreen.dart';
-import 'package:tugas13/app_crud/MainScreen/bottom.dart';
+import 'package:tugas13/app_crud/mainscreen/bottom/bookmarkscreen.dart';
+import 'package:tugas13/app_crud/mainscreen/bottom/categoriesscreen.dart';
+import 'package:tugas13/app_crud/mainscreen/bottom.dart';
 import 'package:tugas13/app_crud/screens/book_list_screen.dart';
 
 class MainScreen extends StatefulWidget {

@@ -16,6 +16,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
   Future<void> _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
+      //menunggu sampai user memilih atau membatalkan.
       source: ImageSource.gallery,
     );
 
@@ -34,7 +35,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
   final _currentPageController = TextEditingController();
   String _selectedGenre = 'Fiksi';
   String _selectedStatus = 'to_read';
-  bool _isLoading = false;
+  bool _isLoading =
+      false; // dipakai untuk men-disable tombol dan menampilkan spinner
   final List<String> _genres = [
     'Fiksi',
     'Non-Fiksi',

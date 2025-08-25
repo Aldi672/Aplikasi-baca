@@ -347,7 +347,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Progress (if reading)
+                    // hanya akan ditampilkan jika status buku adalah (sedang dibaca).
                     if (_book.status == 'reading') ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -365,7 +365,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   ),
                                 ),
                                 TextButton.icon(
-                                  onPressed: _updateProgress,
+                                  onPressed:
+                                      _updateProgress, // Saat tombol ditekan → fungsi _updateProgress dipanggil
                                   icon: const Icon(Icons.edit),
                                   label: const Text('Update'),
                                 ),
@@ -373,7 +374,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             ),
                             const SizedBox(height: 12),
                             LinearProgressIndicator(
-                              value: _book.progress,
+                              value: _book
+                                  .progress, // nilai presentase antara 0.0 sampai 1.0
                               backgroundColor: Colors.grey.shade300,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 Colors.deepPurple.shade400,
@@ -382,8 +384,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${_book.currentPage}/${_book.totalPages} halaman (${(_book.progress * 100).toInt()}%)',
-                              style: TextStyle(color: Colors.grey.shade600),
+                              '${_book.currentPage}/${_book.totalPages} halaman (${(_book.progress * 100).toInt()}%)', //halaman sekarang. //jumlah total halaman. //persen progress
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                              ), // Misalnya kalau buku 200 halaman dan sekarang di halaman 50 → 50/200 halaman (25%).
                             ),
                           ],
                         ),
@@ -421,7 +425,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    _book.statusText.toLowerCase() == 'selesai'
+                                    _book.statusText.toLowerCase() ==
+                                            'selesai' // huruf kapital/kecil tidak masalah.
                                         ? 'Baca Ulang'
                                         : _book.statusText.toLowerCase() ==
                                               'belum dibaca'
@@ -447,25 +452,29 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             crossAxisSpacing: 12,
                             childAspectRatio: 2.5,
                             children: [
+                              // Info Genre buku
                               _buildInfoCard(
                                 'Genre',
-                                _book.genre,
+                                _book.genre, // Isi: genre buku
                                 Icons.category,
                               ),
+                              // Info jumlah halaman total buku
                               _buildInfoCard(
                                 'Total Halaman',
-                                '${_book.totalPages}',
+                                '${_book.totalPages}', // Isi: total halaman
                                 Icons.pages,
                               ),
+                              // Info kapan buku ditambahkan ke koleksi
                               _buildInfoCard(
                                 'Tanggal Ditambah',
-                                '${_book.dateAdded.day}/${_book.dateAdded.month}/${_book.dateAdded.year}',
+                                '${_book.dateAdded.day}/${_book.dateAdded.month}/${_book.dateAdded.year}', // Format tanggal sederhana:
                                 Icons.calendar_today,
                               ),
+                              // Info kapan buku selesai dibaca (opsional, hanya jika tidak null)
                               if (_book.dateCompleted != null)
                                 _buildInfoCard(
                                   'Tanggal Selesai',
-                                  '${_book.dateCompleted!.day}/${_book.dateCompleted!.month}/${_book.dateCompleted!.year}',
+                                  '${_book.dateCompleted!.day}/${_book.dateCompleted!.month}/${_book.dateCompleted!.year}', // Tanggal selesai dalam format
                                   Icons.check_circle,
                                 ),
                             ],
@@ -489,7 +498,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               border: Border.all(color: Colors.grey.shade200),
                             ),
                             child: Text(
-                              _book.description.isNotEmpty
+                              _book
+                                      .description
+                                      .isNotEmpty // tampilkan teks default
                                   ? _book.description
                                   : 'Tidak ada deskripsi',
                               style: TextStyle(
